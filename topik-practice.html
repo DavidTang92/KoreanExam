@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOPIK Practice 韓檢練習</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+TC:wght@300;400;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d14;
+    --surface: #16161f;
+    --card: #1e1e2e;
+    --border: #2e2e44;
+    --accent: #c9a84c;
+    --accent2: #e8c97a;
+    --text: #e8e8f0;
+    --text-muted: #8888aa;
+    --correct: #4caf7d;
+    --wrong: #e05c5c;
+    --korean: #a0c4ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background decoration */
+  body::before {
+    content: '한';
+    position: fixed;
+    top: -80px;
+    right: -60px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 400px;
+    color: rgba(201,168,76,0.04);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '국';
+    position: fixed;
+    bottom: -80px;
+    left: -60px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 400px;
+    color: rgba(160,196,255,0.04);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 16px;
+    margin-bottom: 16px;
+    border-radius: 2px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 6vw, 60px);
+    color: var(--text);
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .header h1 span {
+    color: var(--accent);
+  }
+
+  .header-sub {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    letter-spacing: 4px;
+  }
+
+  /* Setup Panel */
+  #setup-panel {
+    animation: fadeUp 0.5s ease;
+  }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 600px) {
+    .setup-grid { grid-template-columns: 1fr; }
+  }
+
+  .setup-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .setup-section h3 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .setup-section p.en {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: -12px;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .check-item:hover {
+    background: rgba(201,168,76,0.06);
+    border-color: rgba(201,168,76,0.2);
+  }
+
+  .check-item input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .check-item input:checked + .checkmark {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check-item input:checked + .checkmark::after {
+    content: '✓';
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .check-label {
+    flex: 1;
+  }
+
+  .check-label .zh { font-size: 14px; }
+  .check-label .en { font-size: 11px; color: var(--text-muted); }
+
+  .level-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+  }
+
+  .level-1 { background: rgba(76, 175, 125, 0.15); color: #4caf7d; }
+  .level-2 { background: rgba(201, 168, 76, 0.15); color: var(--accent); }
+  .level-3 { background: rgba(224, 92, 92, 0.15); color: var(--wrong); }
+
+  /* Count control */
+  .count-control {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .count-control button {
+    width: 36px;
+    height: 36px;
+    background: var(--border);
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .count-control button:hover { background: var(--accent); color: #000; }
+
+  .count-display {
+    font-size: 28px;
+    font-family: 'DM Serif Display', serif;
+    color: var(--accent);
+    min-width: 40px;
+    text-align: center;
+  }
+
+  /* Start Button */
+  .start-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 2px;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+  }
+
+  .start-btn:active { transform: translateY(0); }
+
+  /* Quiz Panel */
+  #quiz-panel {
+    display: none;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .progress-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .q-counter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+  }
+
+  .q-counter span { font-size: 14px; color: var(--text-muted); }
+
+  .score-display {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .score-display b { color: var(--correct); }
+
+  .progress-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question Card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .q-meta {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .q-tag {
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .tag-level { background: rgba(201,168,76,0.15); color: var(--accent); }
+  .tag-type { background: rgba(160,196,255,0.1); color: var(--korean); }
+
+  .q-text {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .q-text .korean {
+    font-family: 'Noto Serif KR', serif;
+    color: var(--korean);
+    font-size: 22px;
+  }
+
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* Reading passage */
+  .reading-passage {
+    background: rgba(160,196,255,0.05);
+    border-left: 3px solid var(--korean);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    line-height: 2;
+    color: var(--korean);
+  }
+
+  .reading-passage .translation {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(201,168,76,0.06);
+  }
+
+  .option-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .option-btn:hover:not(:disabled) .option-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: rgba(76,175,125,0.1);
+  }
+
+  .option-btn.correct .option-num {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: rgba(224,92,92,0.1);
+  }
+
+  .option-btn.wrong .option-num {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: #fff;
+  }
+
+  /* Fill blank */
+  .fill-input {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: 'Noto Serif KR', serif;
+    outline: none;
+    transition: border 0.2s;
+    margin-top: 16px;
+  }
+
+  .fill-input:focus { border-color: var(--accent); }
+  .fill-input.correct { border-color: var(--correct); background: rgba(76,175,125,0.1); }
+  .fill-input.wrong { border-color: var(--wrong); background: rgba(224,92,92,0.1); }
+
+  .submit-fill-btn {
+    margin-top: 12px;
+    padding: 12px 32px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .submit-fill-btn:hover { background: var(--accent2); }
+
+  /* Explanation */
+  .explanation {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: none;
+  }
+
+  .explanation.show { display: block; animation: fadeUp 0.3s ease; }
+
+  .explanation .exp-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  /* Next button */
+  .next-btn {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 2px;
+    font-family: 'Noto Sans TC', sans-serif;
+    display: none;
+  }
+
+  .next-btn.show { display: block; }
+  .next-btn:hover { background: rgba(201,168,76,0.1); }
+
+  /* Result Panel */
+  #result-panel {
+    display: none;
+    text-align: center;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    margin-bottom: 24px;
+  }
+
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .result-score {
+    font-size: 64px;
+    font-family: 'DM Serif Display', serif;
+    line-height: 1;
+    margin: 16px 0;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+
+  .restart-btn {
+    padding: 16px 48px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 2px;
+  }
+
+  .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .korean-text {
+    font-family: 'Noto Serif KR', serif;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">TOPIK Practice System</div>
+    <h1>Korean <span>Test</span> Prep</h1>
+    <div class="header-sub">한국어능력시험 연습</div>
+  </div>
+
+  <!-- Setup Panel -->
+  <div id="setup-panel">
+    <div class="setup-grid">
+
+      <!-- Level selection -->
+      <div class="setup-section">
+        <h3>選擇級別 / Level</h3>
+        <p class="en">Select difficulty levels</p>
+        <div class="checkbox-group">
+          <label class="check-item">
+            <input type="checkbox" name="level" value="1" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">TOPIK I <span class="level-badge level-1">1-2 級</span></div>
+              <div class="en">Beginner / 初級</div>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="level" value="2" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">TOPIK II <span class="level-badge level-2">3-4 級</span></div>
+              <div class="en">Intermediate / 中級</div>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="level" value="3" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">TOPIK II <span class="level-badge level-3">5-6 級</span></div>
+              <div class="en">Advanced / 高級</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Question type selection -->
+      <div class="setup-section">
+        <h3>題型選擇 / Type</h3>
+        <p class="en">Select question types</p>
+        <div class="checkbox-group">
+          <label class="check-item">
+            <input type="checkbox" name="type" value="vocab" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">詞彙選擇題</div>
+              <div class="en">Vocabulary MCQ / 어휘</div>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="type" value="grammar" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">文法選擇題</div>
+              <div class="en">Grammar MCQ / 문법</div>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="type" value="reading" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">閱讀理解</div>
+              <div class="en">Reading Comp. / 독해</div>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="type" value="fill" checked>
+            <div class="checkmark"></div>
+            <div class="check-label">
+              <div class="zh">填空題</div>
+              <div class="en">Fill in the blank / 빈칸</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Question count -->
+    <div class="setup-section" style="margin-bottom:24px;">
+      <h3>題目數量 / Question Count</h3>
+      <p class="en">How many questions per session?</p>
+      <div class="count-control">
+        <button onclick="changeCount(-5)">−</button>
+        <div class="count-display" id="count-display">10</div>
+        <button onclick="changeCount(5)">+</button>
+        <span style="color:var(--text-muted); font-size:13px;">題 / questions</span>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">
+      開始練習 START PRACTICE →
+    </button>
+  </div>
+
+  <!-- Quiz Panel -->
+  <div id="quiz-panel">
+    <div class="quiz-header">
+      <div class="progress-info">
+        <div class="q-counter" id="q-counter">1 <span>/ 10</span></div>
+      </div>
+      <div class="score-display">
+        正確 Correct: <b id="score-display">0</b>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <!-- Dynamic content -->
+    </div>
+
+    <div class="explanation" id="explanation"></div>
+
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+      下一題 NEXT QUESTION →
+    </button>
+  </div>
+
+  <!-- Result Panel -->
+  <div id="result-panel">
+    <div class="result-card">
+      <div class="result-title" id="result-emoji">🎉</div>
+      <div style="font-size:16px; color:var(--text-muted); margin-bottom:8px;">韓檢練習完成 / Practice Complete</div>
+      <div class="result-score" id="result-score">8/10</div>
+      <div style="color:var(--text-muted); font-size:13px;">得分率 Score Rate: <span id="result-pct" style="color:var(--accent);">80%</span></div>
+
+      <div class="result-stats">
+        <div class="stat-box">
+          <div class="stat-num" style="color:var(--correct)" id="stat-correct">0</div>
+          <div class="stat-label">正確 Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" style="color:var(--wrong)" id="stat-wrong">0</div>
+          <div class="stat-label">錯誤 Wrong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" style="color:var(--korean)" id="stat-total">0</div>
+          <div class="stat-label">總題數 Total</div>
+        </div>
+      </div>
+
+      <div id="result-message" style="font-size:15px; color:var(--text-muted); margin-bottom:28px;"></div>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">重新練習 RESTART →</button>
+  </div>
+
+</div>
+
+<script>
+// ================================================================
+// QUESTION BANK
+// ================================================================
+const QUESTIONS = {
+  vocab: {
+    1: [
+      {
+        question: "다음 빈칸에 알맞은 단어를 고르세요.\n오늘 날씨가 ( ) 코트를 입었어요.",
+        questionZh: "選出適合填入括號的詞。\n今天天氣（ ），所以穿了大衣。",
+        options: ["더워서","추워서","바빠서","슬퍼서"],
+        optionsZh: ["因為熱","因為冷","因為忙","因為悲傷"],
+        answer: 1,
+        explanation: "추워서 = 因為冷。날씨가 추워서 코트를 입었어요 = 因為天氣冷所以穿了大衣。文法：形容詞 + 아서/어서 = 因為…"
+      },
+      {
+        question: "밑줄 친 단어와 반대되는 뜻을 가진 것을 고르세요.\n이 가방은 <u>가벼워요</u>.",
+        questionZh: "選出與底線詞語意思相反的詞。\n這個包包很輕。",
+        options: ["작아요","무거워요","비싸요","좋아요"],
+        optionsZh: ["小","重","貴","好"],
+        answer: 1,
+        explanation: "가볍다（輕）的反義詞是 무겁다（重）。가볍다 → 반의어 → 무겁다"
+      },
+      {
+        question: "다음 중 '먹다'와 관계없는 단어는?",
+        questionZh: "下列哪個詞與「吃」無關？",
+        options: ["밥","음식","식당","바람"],
+        optionsZh: ["飯","食物","餐廳","風"],
+        answer: 3,
+        explanation: "바람 = 風，與吃東西無關。其餘：밥(飯)、음식(食物)、식당(餐廳)都與飲食相關。"
+      },
+      {
+        question: "( )에 알맞은 말을 고르세요.\n저는 매일 아침 6시에 ( ).",
+        questionZh: "選出適合填入括號的詞。\n我每天早上6點（ ）。",
+        options: ["잡니다","일어납니다","먹습니다","갑니다"],
+        optionsZh: ["睡覺","起床","吃東西","去"],
+        answer: 1,
+        explanation: "6시에 일어납니다 = 6點起床。시간 + 에 + 일어나다 是最自然的搭配。"
+      }
+    ],
+    2: [
+      {
+        question: "다음 ( )에 가장 알맞은 것을 고르세요.\n그 영화는 재미있다는 ( )이/가 많아요.",
+        questionZh: "選出最適合填入括號的詞。\n那部電影有很多說「有趣」的（ ）。",
+        options: ["소문","의견","기사","평가"],
+        optionsZh: ["謠言","意見","報導","評價"],
+        answer: 3,
+        explanation: "평가(評價) = 對事物進行判斷的評論。소문(謠言)、의견(意見)、기사(報導)語意皆不符。"
+      },
+      {
+        question: "밑줄 친 부분과 의미가 같은 것은?\n회의가 <u>취소되었습니다</u>.",
+        questionZh: "選出與底線部分意思相同的詞組。\n會議被取消了。",
+        options: ["없어졌습니다","시작되었습니다","연기되었습니다","끝났습니다"],
+        optionsZh: ["消失了","開始了","延期了","結束了"],
+        answer: 0,
+        explanation: "취소(取消) ≈ 없어지다(消失、取消)。연기(延期)是推遲，不同意思。"
+      },
+      {
+        question: "다음 단어 중 성격을 나타내는 것이 아닌 것은?",
+        questionZh: "下列哪個詞「不是」用來描述個性的？",
+        options: ["친절하다","성실하다","피곤하다","소극적이다"],
+        optionsZh: ["親切的","誠實的","疲累的","消極的"],
+        answer: 2,
+        explanation: "피곤하다(疲累)是表示狀態的詞，不是性格描述。其餘都是性格相關形容詞。"
+      }
+    ],
+    3: [
+      {
+        question: "다음 ( )에 들어갈 말로 가장 적절한 것은?\n그의 발표는 내용이 너무 복잡하여 ( )이/가 낮았다.",
+        questionZh: "選出最適合填入括號的詞。\n他的發表內容太複雜，（ ）很低。",
+        options: ["가독성","신뢰성","창의성","효율성"],
+        optionsZh: ["可讀性","可信度","創意性","效率性"],
+        answer: 0,
+        explanation: "가독성(可讀性) = 文章容易閱讀理解的程度。內容複雜 → 可讀性低，語意最為連貫。"
+      },
+      {
+        question: "밑줄 친 단어의 쓰임이 잘못된 것은?",
+        questionZh: "選出底線詞語使用錯誤的句子。",
+        options: ["그는 매우 <u>신중하게</u> 결정을 내렸다.","날씨가 <u>흐려서</u> 우산을 챙겼다.","그녀는 목소리가 <u>우렁차서</u> 말이 없다.","이 문제는 매우 <u>복잡한</u> 구조를 가지고 있다."],
+        optionsZh: ["他非常謹慎地做了決定。","天氣陰所以帶了傘。","她聲音洪亮所以話不多。(錯誤)","這個問題具有非常複雜的結構。"],
+        answer: 2,
+        explanation: "우렁차다(聲音洪亮)和話少沒有邏輯關係，應該是話多才對。"
+      }
+    ]
+  },
+  grammar: {
+    1: [
+      {
+        question: "다음 ( )에 알맞은 것을 고르세요.\n저는 학생( ) 매일 학교에 가요.",
+        questionZh: "選出適合填入括號的助詞。\n我是學生，每天去學校。",
+        options: ["이라서","에서","으로","한테"],
+        optionsZh: ["因為是（身份）","在（場所）","往（方向）","對（人）"],
+        answer: 0,
+        explanation: "이라서/라서 = 因為是…（表示身份原因）。학생이라서 매일 학교에 가요 = 因為是學生，每天去學校。"
+      },
+      {
+        question: "다음 중 올바른 문장을 고르세요.",
+        questionZh: "選出正確的句子。",
+        options: ["저는 어제 공원에서 운동했어요.","저는 어제 공원에 운동했어요.","저는 어제 공원이 운동했어요.","저는 어제 공원를 운동했어요."],
+        optionsZh: ["昨天我在公園運動了。(O)","昨天我去公園運動了。(語意不完整)","昨天我是公園運動了。(X)","助詞使用錯誤 (X)"],
+        answer: 0,
+        explanation: "에서 用於「在某地點做某動作」。공원에서 운동하다 = 在公園運動。에 後通常接移動動詞（가다、오다）。"
+      },
+      {
+        question: "( )에 들어갈 말로 알맞은 것을 고르세요.\n배가 고파요. 뭔가 ( ) 싶어요.",
+        questionZh: "選出適合填入括號的詞。\n我很餓，想（ ）東西。",
+        options: ["먹고","먹어","먹으면","먹어서"],
+        optionsZh: ["吃（想做）","吃（已吃）","如果吃","因為吃"],
+        answer: 0,
+        explanation: "動詞 + 고 싶다 = 想做…。먹고 싶다 = 想吃。이 문법은 희망/욕구를 나타낸다。"
+      }
+    ],
+    2: [
+      {
+        question: "다음 밑줄 친 부분이 어색한 것을 고르세요.",
+        questionZh: "選出底線部分不自然的句子。",
+        options: ["비가 <u>오는 바람에</u> 소풍이 취소됐어요.","그는 열심히 <u>공부한 덕분에</u> 합격했어요.","돈이 <u>없음에도 불구하고</u> 여행을 떠났어요.","내일 시험이 <u>있어서인지</u> 긴장이 돼요."],
+        optionsZh: ["因為下雨，郊遊取消了。","多虧了他努力學習，通過了考試。","儘管沒有錢，還是去旅行了。","也許是因為明天有考試，我很緊張。"],
+        answer: -1,
+        explanation: "四個句子都是正確的！이 문제는 전부 올바른 문법 표현입니다。-는 바람에（由於）、-ㄴ 덕분에（多虧）、-에도 불구하고（儘管）、-아서인지（也許是因為）都是正確的高級文法。",
+        allCorrect: true
+      },
+      {
+        question: "다음 ( )에 들어갈 적절한 표현은?\n아무리 바빠( ) 식사는 꼭 챙겨야 해요.",
+        questionZh: "選出最適合填入括號的表現。\n無論多忙，一定要好好吃飯。",
+        options: ["더라도","지만","아서","니까"],
+        optionsZh: ["即使（讓步）","但是","因為","所以/因為"],
+        answer: 0,
+        explanation: "아무리 + V/A + 더라도 = 無論再怎麼… 是讓步條件句型。아무리 바쁘더라도 = 無論多忙。"
+      },
+      {
+        question: "( )에 공통으로 들어갈 수 있는 것을 고르세요.\n・ 여기 앉아( ) 돼요?\n・ 이거 먹어( ) 돼요?",
+        questionZh: "選出可以共同填入括號的詞。\n・ 可以坐這裡嗎？\n・ 可以吃這個嗎？",
+        options: ["도","서","야","야만"],
+        optionsZh: ["也","然後","才行","非…不可"],
+        answer: 0,
+        explanation: "V + 아/어도 돼요 = 可以做…（許可）。앉아도 돼요 = 可以坐。먹어도 돼요 = 可以吃。"
+      }
+    ],
+    3: [
+      {
+        question: "다음 중 문법적으로 틀린 문장을 고르세요.",
+        questionZh: "選出文法錯誤的句子。",
+        options: ["그 소식을 듣고서야 비로소 사태의 심각성을 깨달았다.","회의 결과에 따라서 향후 계획이 결정될 것입니다.","그는 일을 마치는 데에 예상보다 오래 걸렸다.","성공하려면 노력하지 않으면 안 된다고 생각되어진다."],
+        optionsZh: ["聽到那個消息之後才終於意識到事態的嚴重性。","根據會議結果，將決定今後的計劃。","他完成工作花了比預期更長的時間。","認為如果想成功就必須努力。(雙重被動，不自然)"],
+        answer: 3,
+        explanation: "생각되어진다 = 생각되다（被動）+ 어지다（被動） = 雙重被動，是不自然的表達。正確應為 생각된다 或 생각한다。"
+      }
+    ]
+  },
+  reading: {
+    1: [
+      {
+        passage: "저는 주말마다 공원에 가요. 거기서 산책도 하고 친구들도 만나요. 공원에는 큰 나무와 꽃이 많아요. 저는 공원을 정말 좋아해요.",
+        passageZh: "我每週末都去公園。在那裡散步，也和朋友們見面。公園裡有很多大樹和花。我非常喜歡公園。",
+        question: "이 사람은 주말에 무엇을 해요?",
+        questionZh: "這個人週末做什麼？",
+        options: ["집에서 쉬어요.","공원에 가요.","도서관에 가요.","친구 집에 가요."],
+        optionsZh: ["在家休息。","去公園。","去圖書館。","去朋友家。"],
+        answer: 1,
+        explanation: "文章第一句：저는 주말마다 공원에 가요 = 我每週末都去公園。答案是 ② 공원에 가요。"
+      },
+      {
+        passage: "오늘은 날씨가 맑아요. 하늘이 파랗고 햇빛이 따뜻해요. 이런 날에는 밖에서 운동하고 싶어요. 집 근처 공원에 가려고 해요.",
+        passageZh: "今天天氣晴朗。天空湛藍，陽光溫暖。這種天氣想在外面運動。打算去家附近的公園。",
+        question: "이 사람은 무엇을 하려고 해요?",
+        questionZh: "這個人打算做什麼？",
+        options: ["집에서 쉬다","날씨 구경을 하다","공원에서 운동하다","친구를 만나다"],
+        optionsZh: ["在家休息","觀賞天氣","在公園運動","見朋友"],
+        answer: 2,
+        explanation: "밖에서 운동하고 싶다 + 공원에 가려고 한다 → 答案是 ③ 공원에서 운동하다。"
+      }
+    ],
+    2: [
+      {
+        passage: "현대인들은 바쁜 생활로 인해 자신의 건강을 돌볼 시간이 부족하다. 특히 식사를 불규칙하게 하거나 운동을 게을리하는 경우가 많다. 전문가들은 하루 30분 이상의 가벼운 운동과 균형 잡힌 식사가 건강 유지의 기본임을 강조한다.",
+        passageZh: "現代人因為忙碌的生活，缺乏照顧自身健康的時間。特別是飲食不規律或疏於運動的情況很多。專家們強調，每天30分鐘以上的輕度運動和均衡飲食是維持健康的基本。",
+        question: "이 글의 중심 내용으로 가장 알맞은 것은?",
+        questionZh: "這篇文章的中心內容是什麼？",
+        options: ["현대인의 직장 생활 문제","바쁜 현대인들에게 필요한 건강 관리","전문가들의 의견이 중요한 이유","운동 종류와 방법 소개"],
+        optionsZh: ["現代人的職場生活問題","忙碌現代人所需的健康管理","專家意見重要的理由","運動種類與方法介紹"],
+        answer: 1,
+        explanation: "文章圍繞「忙碌現代人的健康問題及解決方法」展開，中心主題是 ② 건강 관리。"
+      },
+      {
+        passage: "독서는 단순히 정보를 얻는 것을 넘어 사고력과 창의력을 키우는 효과가 있다. 그러나 최근 스마트폰 사용 증가로 독서 인구가 감소하고 있다. 이에 따라 학교와 도서관에서는 다양한 독서 장려 프로그램을 운영하고 있다.",
+        passageZh: "閱讀不僅僅是獲取信息，還有培養思考力和創造力的效果。但最近隨著智能手機使用增加，閱讀人口正在減少。因此，學校和圖書館正在運營各種鼓勵閱讀的計劃。",
+        question: "글의 내용과 맞는 것을 고르세요.",
+        questionZh: "選出與文章內容相符的選項。",
+        options: ["독서는 정보 획득에만 도움이 된다.","스마트폰으로 독서 인구가 늘었다.","학교는 독서 프로그램을 운영한다.","도서관은 스마트폰 사용을 권장한다."],
+        optionsZh: ["閱讀只對獲取信息有幫助。","因為智能手機，閱讀人口增加了。","學校運營閱讀計劃。","圖書館鼓勵使用智能手機。"],
+        answer: 2,
+        explanation: "最後一句：학교와 도서관에서는 독서 장려 프로그램을 운영하고 있다 → 答案是 ③。"
+      }
+    ],
+    3: [
+      {
+        passage: "인공지능의 발전은 우리 사회에 큰 변화를 가져오고 있다. 의료 분야에서는 AI를 활용한 정밀 진단이 가능해졌고, 교육 분야에서는 개인 맞춤형 학습이 실현되고 있다. 그러나 이러한 기술 발전이 가져오는 일자리 감소와 프라이버시 침해 문제 또한 심각하게 논의되어야 한다.",
+        passageZh: "人工智能的發展正為我們的社會帶來巨大變化。在醫療領域，利用AI的精密診斷成為可能；在教育領域，個性化學習正在實現。但是，這種技術發展帶來的就業減少和隱私侵害問題也應該被認真討論。",
+        question: "이 글의 서술 방식으로 적절한 것은?",
+        questionZh: "這篇文章的敘述方式是？",
+        options: ["특정 기술의 사용 방법을 단계적으로 설명하고 있다.","AI의 긍정적인 측면과 부정적인 측면을 균형 있게 제시하고 있다.","AI 기술을 비판적으로만 서술하고 있다.","과거와 현재를 비교하여 미래를 예측하고 있다."],
+        optionsZh: ["逐步說明特定技術的使用方法。","均衡地呈現AI的正面和負面。","只批判性地敘述AI技術。","通過比較過去和現在來預測未來。"],
+        answer: 1,
+        explanation: "文章先介紹AI在醫療、教育的正面影響（긍정적），再提出就業問題和隱私侵害（부정적），屬於均衡呈現的敘述方式。"
+      }
+    ]
+  },
+  fill: {
+    1: [
+      {
+        question: "빈칸에 알맞은 단어를 한국어로 쓰세요.\n저는 매일 아침 ______을/를 마셔요. (牛奶)",
+        questionZh: "請用韓文填入空格。\n我每天早上喝______。（牛奶）",
+        hint: "힌트: ㅇ으로 시작해요. 발음은 'uyu'",
+        answer: "우유",
+        answers: ["우유"],
+        explanation: "우유 = 牛奶（milk）。發音：u-yu。常見組合：우유를 마시다 = 喝牛奶。"
+      },
+      {
+        question: "빈칸을 채우세요.\n저는 한국어를 _____ 싶어요. (想學)",
+        questionZh: "填入空格。\n我想學韓語。",
+        hint: "힌트: 동사 + 고 싶다 형태",
+        answer: "배우고",
+        answers: ["배우고"],
+        explanation: "배우다（學）→ 배우고 싶다（想學）。動詞語幹 + 고 싶다 = 想做…。"
+      },
+      {
+        question: "빈칸을 채우세요.\n도서관은 학교 _____에 있어요. (旁邊)",
+        questionZh: "填入空格。\n圖書館在學校______。（旁邊）",
+        hint: "위치를 나타내는 명사예요",
+        answer: "옆",
+        answers: ["옆"],
+        explanation: "옆 = 旁邊。常見位置詞：위(上)、아래(下)、앞(前)、뒤(後)、옆(旁邊)、안(裡面)、밖(外面)。"
+      }
+    ],
+    2: [
+      {
+        question: "알맞은 말을 넣으세요.\n그 사람은 의사 _____ 사실을 몰랐어요. (居然是醫生，讓步/意外)",
+        questionZh: "填入適當的詞。\n不知道那個人居然是醫生。",
+        hint: "이다 + ?? = 인데도/임에도",
+        answer: "인데도",
+        answers: ["인데도", "임에도"],
+        explanation: "N + 인데도 = 雖然是…、居然是…（表示意外、讓步）。他是醫生這件事讓說話者感到意外。"
+      },
+      {
+        question: "빈칸을 채워 자연스러운 문장을 완성하세요.\n이 일을 빨리 끝______ 집에 갈 수 있어요.",
+        questionZh: "完成自然的句子。\n這件事快點完成______就可以回家。",
+        hint: "V + 야 (조건 = 才能)",
+        answer: "내야",
+        answers: ["내야"],
+        explanation: "끝내다(完成) → 끝내야 = 才能完成。V + 아야/어야 = 必須做…才能…（條件）。"
+      }
+    ],
+    3: [
+      {
+        question: "문맥에 맞게 빈칸을 채우세요.\n그는 어려운 상황에서도 포기하지 않고 끝까지 ______했다. (堅持/貫徹到底)",
+        questionZh: "根據文脈填入空格。\n他即使在困難的情況下也沒有放棄，堅持到底______。",
+        hint: "사자성어나 고급 단어 (4자)",
+        answer: "노력",
+        answers: ["노력", "관철", "인내"],
+        explanation: "可填入：노력(努力)、인내(忍耐)、관철(貫徹)。此句強調「不放棄地堅持」的含義。"
+      }
+    ]
+  }
+};
+
+// ================================================================
+// APP STATE
+// ================================================================
+let questionCount = 10;
+let selectedLevels = [1, 2, 3];
+let selectedTypes = ["vocab", "grammar", "reading", "fill"];
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+// ================================================================
+// SETUP
+// ================================================================
+function changeCount(delta) {
+  questionCount = Math.max(5, Math.min(30, questionCount + delta));
+  document.getElementById('count-display').textContent = questionCount;
+}
+
+function getSelectedLevels() {
+  return [...document.querySelectorAll('input[name="level"]:checked')].map(el => parseInt(el.value));
+}
+
+function getSelectedTypes() {
+  return [...document.querySelectorAll('input[name="type"]:checked')].map(el => el.value);
+}
+
+function buildQuestionPool(levels, types) {
+  let pool = [];
+  types.forEach(type => {
+    levels.forEach(level => {
+      const qs = QUESTIONS[type]?.[level];
+      if (qs) {
+        qs.forEach(q => pool.push({ ...q, _type: type, _level: level }));
+      }
+    });
+  });
+  return pool;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  selectedLevels = getSelectedLevels();
+  selectedTypes = getSelectedTypes();
+
+  if (!selectedLevels.length || !selectedTypes.length) {
+    alert('請至少選擇一個級別和一個題型！\nPlease select at least one level and one type!');
+    return;
+  }
+
+  let pool = buildQuestionPool(selectedLevels, selectedTypes);
+  if (!pool.length) {
+    alert('所選組合沒有題目，請調整選項！');
+    return;
+  }
+
+  pool = shuffle(pool);
+  currentQuestions = pool.slice(0, questionCount);
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('quiz-panel').style.display = 'block';
+  document.getElementById('result-panel').style.display = 'none';
+
+  renderQuestion();
+}
+
+// ================================================================
+// QUIZ
+// ================================================================
+function typeLabel(t) {
+  const map = { vocab: '詞彙 Vocab', grammar: '文法 Grammar', reading: '閱讀 Reading', fill: '填空 Fill' };
+  return map[t] || t;
+}
+
+function levelLabel(l) {
+  const map = { 1: 'TOPIK I (1-2)', 2: 'TOPIK II (3-4)', 3: 'TOPIK II (5-6)' };
+  return map[l] || l;
+}
+
+function renderQuestion() {
+  const q = currentQuestions[currentIndex];
+  answered = false;
+
+  // Update progress
+  const pct = (currentIndex / currentQuestions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('q-counter').innerHTML = `${currentIndex + 1} <span>/ ${currentQuestions.length}</span>`;
+  document.getElementById('score-display').textContent = score;
+
+  // Hide explanation & next
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('next-btn').classList.remove('show');
+
+  let html = '';
+
+  // Meta tags
+  html += `<div class="q-meta">
+    <span class="q-tag tag-level">${levelLabel(q._level)}</span>
+    <span class="q-tag tag-type">${typeLabel(q._type)}</span>
+  </div>`;
+
+  // Reading passage
+  if (q.passage) {
+    html += `<div class="reading-passage">
+      <span class="korean-text">${q.passage}</span>
+    </div>`;
+  }
+
+  // Question text
+  const qLines = q.question.split('\n');
+  html += `<div class="q-text">`;
+  qLines.forEach((line) => {
+    html += `<div class="korean">${line}</div>`;
+  });
+  html += `</div>`;
+
+  if (q.hint) {
+    html += `<div class="q-hint">💡 ${q.hint}</div>`;
+  }
+
+  // Options or fill
+  if (q._type === 'fill') {
+    html += `<input type="text" class="fill-input" id="fill-input" placeholder="한국어로 입력하세요 / Enter in Korean" onkeypress="fillKeyPress(event)">`;
+    html += `<button class="submit-fill-btn" onclick="checkFill()">確認 Submit</button>`;
+  } else {
+    html += `<div class="options">`;
+    q.options.forEach((opt, i) => {
+    html += `<button class="option-btn" id="opt-${i}" onclick="checkAnswer(${i})">
+        <div class="option-num">${i + 1}</div>
+        <div>
+          <div class="korean-text">${opt}</div>
+        </div>
+      </button>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('question-card').innerHTML = html;
+}
+
+function checkAnswer(idx) {
+  if (answered) return;
+  answered = true;
+
+  const q = currentQuestions[currentIndex];
+  const isCorrect = idx === q.answer;
+
+  if (isCorrect) score++;
+
+  // Style buttons
+  q.options.forEach((_, i) => {
+    const btn = document.getElementById(`opt-${i}`);
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add('correct');
+    else if (i === idx && !isCorrect) btn.classList.add('wrong');
+  });
+
+  showExplanation(q, isCorrect ? '✅ 正確！Correct！' : '❌ 錯誤 Wrong');
+}
+
+function checkFill() {
+  if (answered) return;
+  const q = currentQuestions[currentIndex];
+  const input = document.getElementById('fill-input');
+  const userAnswer = input.value.trim();
+  if (!userAnswer) return;
+
+  answered = true;
+  const isCorrect = q.answers.some(a => a === userAnswer);
+
+  if (isCorrect) {
+    score++;
+    input.classList.add('correct');
+  } else {
+    input.classList.add('wrong');
+  }
+  input.disabled = true;
+  document.querySelector('.submit-fill-btn').disabled = true;
+
+  const correctAnswerStr = q.answers.join(' / ');
+  showExplanation(q, isCorrect ? '✅ 正確！Correct！' : `❌ 錯誤 Wrong｜正確答案：${correctAnswerStr}`);
+}
+
+function fillKeyPress(e) {
+  if (e.key === 'Enter') checkFill();
+}
+
+function showExplanation(q, result) {
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = `
+    <div class="exp-title">解析 / Explanation</div>
+    <div style="margin-bottom:8px;font-size:15px;font-weight:bold;">${result}</div>
+    <div style="line-height:1.8;">${q.explanation}</div>
+  `;
+  exp.classList.add('show');
+  document.getElementById('next-btn').classList.add('show');
+
+  document.getElementById('score-display').textContent = score;
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= currentQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// ================================================================
+// RESULT
+// ================================================================
+function showResult() {
+  document.getElementById('quiz-panel').style.display = 'none';
+  document.getElementById('result-panel').style.display = 'block';
+
+  const total = currentQuestions.length;
+  const pct = Math.round((score / total) * 100);
+  const wrong = total - score;
+
+  document.getElementById('result-score').textContent = `${score} / ${total}`;
+  document.getElementById('result-pct').textContent = pct + '%';
+  document.getElementById('stat-correct').textContent = score;
+  document.getElementById('stat-wrong').textContent = wrong;
+  document.getElementById('stat-total').textContent = total;
+
+  let emoji, msg;
+  if (pct >= 90) { emoji = '🏆'; msg = '出色！漢韓高手！/ Outstanding! You are a Korean master!'; }
+  else if (pct >= 70) { emoji = '🎉'; msg = '很好！繼續加油！/ Great job! Keep it up!'; }
+  else if (pct >= 50) { emoji = '📚'; msg = '尚可！多多練習！/ Not bad! Keep practicing!'; }
+  else { emoji = '💪'; msg = '繼續努力！下次一定更好！/ Keep going! You\'ll do better next time!'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-message').textContent = msg;
+  document.getElementById('progress-bar').style.width = '100%';
+}
+
+function restart() {
+  document.getElementById('result-panel').style.display = 'none';
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('progress-bar').style.width = '0%';
+}
+</script>
+</body>
+</html>
